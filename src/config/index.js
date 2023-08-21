@@ -12,12 +12,12 @@ const EnvConfig = {
     dev: {
         baseApi: '/',
         // 一般开发环境会去调用mock的接口地址，提测之后才需要访问测试环境地址。
-        mockApi: 'https://www.fastmock.site/mock/332fa32c3f83dffeb26393f6b998b47e/api'
+        mockApi: 'https://www.fastmock.site/mock/07e7d4609ab8ceda9c2ca1e31de96dff/api'
     },
     // 测试环境
     test: {
         baseApi: '//test.futurefe.com/api',
-        mockApi: 'https://www.fastmock.site/mock/332fa32c3f83dffeb26393f6b998b47e/api'
+        mockApi: 'https://www.fastmock.site/mock/07e7d4609ab8ceda9c2ca1e31de96dff/api'
     },
     // 生产环境
     prod: {

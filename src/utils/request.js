@@ -37,7 +37,8 @@ service.interceptors.request.use((req) => {
  */
 service.interceptors.response.use((res) => {
     const { code, data, msg } = res.data;
-    if (code === 200) return data;
+    if (code === 200) 
+        return data;
     else if (code === 40001) {
         ElMessage.error(TOKEN_INVALID)
         setTimeout(() => {
@@ -59,6 +60,9 @@ function request(options) {
     options.methods = options.method || 'get'
     if(options.method.toLowerCase() === 'get'){
         options.params = options.data
+    }
+    if(typeof options.mock != 'undefined'){
+        config.mock = options.mock
     }
     // prod 生产环境
     if(config.env === 'prod'){
