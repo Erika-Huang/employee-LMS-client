@@ -9,7 +9,7 @@ export default {
             method: 'post',
             data:params,
             // config的index.js已经打卡全局mock，但是也可以局部关闭。
-            mock:true
+            mock:false
         })
     }
 }

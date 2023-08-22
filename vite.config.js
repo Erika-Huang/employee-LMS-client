@@ -11,7 +11,12 @@ export default defineConfig({
   server: {
       host: 'localhost',
       port: 8080,
-      open:true
+      open:true,
+      proxy:{
+        "/api":{
+          target:"http://localhost:3000"
+        }
+      }
   },
   resolve: {
     alias: {
