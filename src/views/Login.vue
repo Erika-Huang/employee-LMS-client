@@ -3,28 +3,51 @@
     <!-- 弹框 -->
     <div class="modal">
       <!-- 表单 -->
-      <el-form ref="userForm" :model="user" status-icon :rules="rules">
-        <!-- S标题 -->
-        <div class="title">登录</div>
-        <!-- E标题 -->
+      <el-form ref="userForm" 
+               :model="user" 
+               status-icon 
+               :rules="rules"
+      >
+        <div class="logo">
+          <img src="./../assets/images/cat1.svg" alt="">
+        </div>
         <el-form-item prop="userName">
-          <el-input type="text" prefix-icon="el-icon-user" v-model="user.userName"/>
+          <el-input type="text" 
+                    placeholder=" account number"
+                    prefix-icon="User"
+                    size="large"
+                    v-model="user.userName"
+          />
         </el-form-item>
+  
         <el-form-item prop="userPwd">
-          <el-input type="password" prefix-icon="el-icon-view" v-model="user.userPwd"/>
+          <el-input type="password" 
+                    placeholder=" password"
+                    size="large"
+                    prefix-icon="Lock" 
+                    v-model="user.userPwd"
+        />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="btn-login" @click="login">登录</el-button>
+          <el-button type="primary" 
+                     class="btn-login" 
+                     @click="login"
+                     size="large"
+          >
+            登录
+          </el-button>
         </el-form-item>
       </el-form>
-      
     </div>
   </div>
 </template>
 
 <script>
+// 导入需要的icon
   export default {
     name: 'login',
+    components: {
+    },
     data(){
       return {
         user:{
@@ -46,6 +69,7 @@
       }
     },
     methods: {
+      
       login() {
         this.$refs.userForm.validate((valid)=>{
           if(valid){
@@ -74,20 +98,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f9fcff;
+  background-color: #7a8bce;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   .modal {
     width: 500px;
-    padding: 50px;
-    background-color: #fff;
+    padding: 60px;
     border-radius: 7px;
-    box-shadow: 0px 0px 9px 1px #c7c9cb9d;
-    .title {
-      font-size: 30px;
-      line-height: 1.5;
-      text-align: center;
-      margin-bottom: 30px;
+    ::placeholder {
+      font-size: 17px;
+    }
+    .logo {
+      margin-bottom: 400px;
+      position: relative;
+      img {
+        position: absolute;
+        overflow: hidden;
+        left: -220px;
+        bottom: -560px;
+        width: 800px;
+        height: 1500px;
+      }
     }
     .btn-login {
       width: 100%;

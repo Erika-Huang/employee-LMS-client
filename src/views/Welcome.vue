@@ -1,7 +1,7 @@
 <template>
   <div class="welcome">
     <div class="content">
-      <div class="sub-title">欢迎体验</div>
+      <div class="sub-title">Hi，您好~ 欢迎使用</div>
       <div class="title">黄阿玛审批后台管理系统</div>
       <div class="desc">——Vue3.0+ElementPlus+Node+Mongo打造审批流通用后台管理系统</div>
     </div>
@@ -10,8 +10,13 @@
 </template>
 
 <script >
+import {User} from "@element-plus/icons";
+
 export default {
-  name: 'welcome'
+  name: 'welcome',
+  components: {
+      User
+    },
 }
 
 </script>
@@ -28,25 +33,28 @@ export default {
     .sub-title{
       font-size: 40px;
       line-height: 52px;
-      color: #333;
+      color: #333e6b;
     }
     .title{
-      font-size: 50px;
-      line-height: 72px;
-      color: #1388fd;
+      font-size: 70px;
+      line-height: 90px;
+      color: #8A9FF2;
     }
     .desc{
       text-align: right;
-      line-height: 40px;
+      line-height: 50px;
       font-size: 14px;
-      color: #999;
+      color: #b2b9d6;
     }
   }
   .img {
     margin-left: 105px;
-    background-image: url('./../assets/images/welcome.png');
-    width: 371px;
-    height: 438px;
+    background-image: url('./../assets/images/pleaseSelect.svg');
+    width: 500px;
+    height: 500px;
+    // background-position: center center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
   }
 }
 </style>

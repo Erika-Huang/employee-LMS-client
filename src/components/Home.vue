@@ -2,13 +2,78 @@
   <!-- 基本布局 -->
   <div class="basic-layout">
     <!-- 导航栏 -->
-    <div class="nav-side"></div>
+    <div :class="['nav-side',isCollapse?'fold':'unfold']">
+      <div class="logo">
+        <img src="./../assets/images/logoBird.png" alt="">
+        <span>Manager</span>
+        <cat />
+      </div>
+      <!-- 导航菜单 -->
+      <el-menu
+        default-active="2"
+        background-color="#4C5DA1"
+        text-color="#fff"
+        router
+        :collapse="isCollapse"
+        class="nav-menu"
+        @open="handleOpen"
+        @close="handleClose"
+      >
+        <el-sub-menu index="1">
+          <template #title>
+            <el-icon size="21px"><Setting /></el-icon>
+            <span class="title-size">系统管理</span>
+          </template>
+            <el-menu-item index="1-1"><el-icon><User /></el-icon> 用户管理</el-menu-item>
+            <el-menu-item index="1-2"><el-icon><Connection /></el-icon>菜单管理</el-menu-item>
+            <el-menu-item index="1-3"><el-icon><Edit /></el-icon>部门管理</el-menu-item>
+            <el-menu-item index="1-4"><el-icon><FolderChecked /></el-icon>角色管理</el-menu-item>
+        </el-sub-menu>
+        <el-sub-menu index="2">
+          <template #title>
+            <el-icon size="21px"><Finished /></el-icon>
+            <span class="title-size">审批管理</span>
+          </template>
+            <el-menu-item index="2-1"><el-icon><CircleCheck /></el-icon>休假申请</el-menu-item>
+            <el-menu-item index="2-2"><el-icon><View /></el-icon>待我审批</el-menu-item>
+        </el-sub-menu>
+
+      </el-menu>
+    </div>
     <!-- 右侧内容 -->
-    <div class="content-right">
+    <div :class="['content-right',isCollapse?'fold':'unfold']">
       <!-- 面包屑 -->
       <div class="nav-top">
-        <div class="bread">面包屑</div>
-        <div class="user">用户</div>
+        <nav class="nav-left">
+           <!-- 导航栏收缩展开按钮 -->
+          <div class="menu-fold" @click="toggle"><el-icon><Fold /></el-icon></div>
+          <div class="bread">面包屑</div>
+        </nav>
+        <div class="user-info">
+          <el-badge :is-dot="noticeCount" class="bell">
+            <el-icon><Bell /></el-icon>
+          </el-badge>
+          <el-dropdown @command="handleLogout">
+            <span class="user-dropdown-link">
+              <!-- {{ userInfo.userName }} -->
+              <div>
+                <el-avatar
+                  src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+                />
+                <el-icon class="user-icon--right">
+                  <arrow-down />
+                </el-icon>
+              </div>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="email">邮箱：{{ userInfo.userEmail }}</el-dropdown-item>
+                <el-dropdown-item command="userinfo">个人信息</el-dropdown-item>
+                <el-dropdown-item command="logout">退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
       </div>
       <!-- 承接页面 -->
       <div class="wrapper">
@@ -22,7 +87,52 @@
 
 <script >
   export default{
-    name: 'Home'
+    name: 'Home',
+    data() {
+      return {
+        isCollapse:false, // 侧边栏伸缩
+        userInfo:this.$store.state.userInfo,
+        noticeCount:0, // 右上角小铃铛红点，0没有红点，>=1有红点
+        userMenu:[]  // 菜单
+      }
+    },
+    mounted(){
+      this.getNoticeCount()
+      this.getMenuList()
+    },
+    methods:{
+      // 控制菜单伸缩
+      toggle() {
+        this.isCollapse = !this.isCollapse
+      },
+      // 点击头像
+      handleLogout(key){
+        if(key == 'email') return;
+        else if(key == 'userinfo'){
+          this.$router.push('/userinfo')
+        }else if(key == 'logout'){
+          this.$store.commit('saveUserInfo','');
+          this.userInfo = null;
+          this.$router.push('/login')
+        }
+      },
+      async getNoticeCount(){
+        try {
+          const count = await this.$api.noticeCount()
+          this.noticeCount = count
+        }catch(error){
+          console.error(error)
+        }
+      },
+      async getMenuList(){
+        try {
+          const count = await this.$api.menuList()
+          this.userMenu = list
+        }catch(error){
+          console.error(error)
+        }
+      }
+    }
   }
 </script>
 
@@ -32,19 +142,52 @@
   .nav-side{
     // 固定定位
     position: fixed;
-    width: 200px;
+    width: 250px;
     // 自动计算属性,自动计算高度
     height: 100vh;
     // 项目的主题色
-    background-color: #2184FF;
+    background-color: #4c5da1;
     color: #fff;
     // 自动出现滚动条
     overflow-y: auto;
     // 打开或者收起宽度有一个过度效果
-    transition: width .5s;
+    transition: width 0.5s;
+    .title-size {
+      font-size: 18px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      height: 5%;
+      img {
+        margin: 0 20px;
+        width: 35px;
+        height: 35px;
+      }
+    }
+    .nav-menu {
+      // height: calc(100vh - 60px);
+      border-right: none;
+    }
+    // 合并
+    &.fold{
+      width: 75px;
+    }
+    // 展开
+    &.unfold{
+      width: 250px;
+    }
   }
   .content-right{
-    margin-left:200px;
+    margin-left:250px;
+    transition: width 1s;
+    &.fold{
+      margin-left: 75px;
+    }
+    &.unfold{
+      margin-left: 250px;
+    }
     .nav-top {
       height: 50px;
       line-height: 50px;
@@ -53,7 +196,34 @@
       justify-content: space-between;
       border-bottom: 1px solid #ddd;
       padding: 0 20px;
-
+      font-size: 18px;
+      .nav-left {
+        display: flex;
+        align-items: center;
+        .menu-fold {
+          padding-right: 20px;
+          line-height: 20px;
+          font-size: 25px;
+          cursor: pointer;
+        }
+      }
+      .user-info {
+          .bell {
+            line-height: 30px;
+            margin-right: 20px;
+            cursor: pointer;
+          }
+          .user-dropdown-link{
+            margin-right: 20px;
+            cursor: pointer;
+            .user-icon--right{
+            // position: fixed;
+            // bottom: 100px;
+              margin-left: 10px;
+            }
+          }
+          
+      }
     }
     .wrapper{
       background-color: #eef0f3;
