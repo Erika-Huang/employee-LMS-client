@@ -10,47 +10,30 @@
       </div>
       <!-- 导航菜单 -->
       <el-menu
-        default-active="2"
+        default-active="activeMenu"
         background-color="#4C5DA1"
         text-color="#fff"
         router
         :collapse="isCollapse"
         class="nav-menu"
-        @open="handleOpen"
-        @close="handleClose"
       >
-        <el-sub-menu index="1">
-          <template #title>
-            <el-icon size="21px"><Setting /></el-icon>
-            <span class="title-size">系统管理</span>
-          </template>
-            <el-menu-item index="1-1"><el-icon><User /></el-icon> 用户管理</el-menu-item>
-            <el-menu-item index="1-2"><el-icon><Connection /></el-icon>菜单管理</el-menu-item>
-            <el-menu-item index="1-3"><el-icon><Edit /></el-icon>部门管理</el-menu-item>
-            <el-menu-item index="1-4"><el-icon><FolderChecked /></el-icon>角色管理</el-menu-item>
-        </el-sub-menu>
-        <el-sub-menu index="2">
-          <template #title>
-            <el-icon size="21px"><Finished /></el-icon>
-            <span class="title-size">审批管理</span>
-          </template>
-            <el-menu-item index="2-1"><el-icon><CircleCheck /></el-icon>休假申请</el-menu-item>
-            <el-menu-item index="2-2"><el-icon><View /></el-icon>待我审批</el-menu-item>
-        </el-sub-menu>
-
+        <tree-menu :userMenu="userMenu"/>
       </el-menu>
     </div>
     <!-- 右侧内容 -->
-    <div :class="['content-right',isCollapse?'fold':'unfold']">
-      <!-- 面包屑 -->
+    <div :class="['content-right',
+         isCollapse?'fold':'unfold']"
+    >
       <div class="nav-top">
         <nav class="nav-left">
            <!-- 导航栏收缩展开按钮 -->
-          <div class="menu-fold" @click="toggle"><el-icon><Fold /></el-icon></div>
+          <div class="menu-fold" @click="toggle">
+            <el-icon><Fold /></el-icon>
+          </div>
           <div class="bread">面包屑</div>
         </nav>
         <div class="user-info">
-          <el-badge :is-dot="noticeCount" class="bell">
+          <el-badge :is-dot="noticeCount>0 ? true:false" class="bell">
             <el-icon><Bell /></el-icon>
           </el-badge>
           <el-dropdown @command="handleLogout">
@@ -67,7 +50,9 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="email">邮箱：{{ userInfo.userEmail }}</el-dropdown-item>
+                <el-dropdown-item command="email">
+                  邮箱：{{ userInfo.userEmail }}
+                </el-dropdown-item>
                 <el-dropdown-item command="userinfo">个人信息</el-dropdown-item>
                 <el-dropdown-item command="logout">退出</el-dropdown-item>
               </el-dropdown-menu>
@@ -86,14 +71,19 @@
 </template>
 
 <script >
+import TreeMenu from './TreeMenu.vue'
   export default{
     name: 'Home',
+    components:{
+      TreeMenu
+    },
     data() {
       return {
         isCollapse:false, // 侧边栏伸缩
         userInfo:this.$store.state.userInfo,
         noticeCount:0, // 右上角小铃铛红点，0没有红点，>=1有红点
-        userMenu:[]  // 菜单
+        userMenu:[],  // 菜单
+        activeMenu: location.hash.slice(1)
       }
     },
     mounted(){
@@ -126,7 +116,7 @@
       },
       async getMenuList(){
         try {
-          const count = await this.$api.menuList()
+          const list = await this.$api.menuList()
           this.userMenu = list
         }catch(error){
           console.error(error)

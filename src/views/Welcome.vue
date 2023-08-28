@@ -10,12 +10,11 @@
 </template>
 
 <script >
-import {User} from "@element-plus/icons";
 
 export default {
   name: 'welcome',
   components: {
-      User
+      
     },
 }
 
