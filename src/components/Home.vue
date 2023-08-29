@@ -17,7 +17,7 @@
         :collapse="isCollapse"
         class="nav-menu"
       >
-        <tree-menu :userMenu="userMenu"/>
+        <TreeMenu :userMenu="userMenu"/>
       </el-menu>
     </div>
     <!-- 右侧内容 -->
@@ -30,7 +30,9 @@
           <div class="menu-fold" @click="toggle">
             <el-icon><Fold /></el-icon>
           </div>
-          <div class="bread">面包屑</div>
+          <div class="bread">
+            <BreadCrumb />
+          </div>
         </nav>
         <div class="user-info">
           <el-badge :is-dot="noticeCount>0 ? true:false" class="bell">
@@ -72,10 +74,12 @@
 
 <script >
 import TreeMenu from './TreeMenu.vue'
+import BreadCrumb from './BreadCrumb.vue'
   export default{
     name: 'Home',
     components:{
-      TreeMenu
+      TreeMenu,
+      BreadCrumb
     },
     data() {
       return {

@@ -12,7 +12,7 @@
             </el-icon>
             <span class="title-size">{{ menu.menuName }}</span>
           </template>
-          <tree-menu :userMenu="menu.children"/>
+          <TreeMenu :userMenu="menu.children"/>
         </el-sub-menu>
         <el-menu-item v-else-if="menu.menuType == 1" 
                       :index="menu.path" 

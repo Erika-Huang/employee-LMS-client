@@ -18,6 +18,13 @@ export default defineConfig({
         }
       }
   },
+  // css: {
+  //   preprocessorOptions: {
+  //     scss: {
+  //       additionalData: `@import '@assets/style/base.scss';`
+  //     }
+  //   }
+  // },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
