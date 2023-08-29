@@ -27,7 +27,7 @@ const EnvConfig = {
 }
 export default {
     env,
-    mock: true, // 只要是true 就会通过mock的方式访问
+    mock: false, // 只要是true 就会通过mock的方式访问
     namespace:'manager', //命名空间
     ...EnvConfig[env] //接口的调用地址
 }
