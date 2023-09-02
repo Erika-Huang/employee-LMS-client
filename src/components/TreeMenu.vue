@@ -1,26 +1,20 @@
 <template>
     <template v-for="menu in userMenu">
-        <el-sub-menu v-if="menu.children 
-                           && menu.children.length>0 
-                           && menu.children[0].menuType == 1" 
-                     :key="menu._id"
-                     :index="menu.path"
-        >
-          <template #title>
-            <el-icon size="21px">
-                <component :is="menu.icon"></component>
-            </el-icon>
-            <span class="title-size">{{ menu.menuName }}</span>
-          </template>
-          <TreeMenu :userMenu="menu.children"/>
+        <el-sub-menu v-if="menu.children
+            && menu.children.length > 0
+            && menu.children[0].menuType == 1" :key="menu._id" :index="menu.path">
+            <template #title>
+                <el-icon size="21px">
+                    <component :is="menu.icon"></component>
+                </el-icon>
+                <span class="title-size">{{ menu.menuName }}</span>
+            </template>
+            <TreeMenu :userMenu="menu.children" />
         </el-sub-menu>
-        <el-menu-item v-else-if="menu.menuType == 1" 
-                      :index="menu.path" 
-                      :key="menu.id"
-        >
+        <el-menu-item v-else-if="menu.menuType == 1" :index="menu.path" :key="menu.id">
             <el-icon>
                 <component :is="menu.icon"></component>
-            </el-icon> 
+            </el-icon>
             {{ menu.menuName }}
         </el-menu-item>
     </template>
@@ -28,11 +22,11 @@
 
 <script>
 export default {
-    name:'TreeMenu',
-    props:{
-        userMenu:{
-            type:Array,
-            default(){
+    name: 'TreeMenu',
+    props: {
+        userMenu: {
+            type: Array,
+            default() {
                 return []
             }
         }

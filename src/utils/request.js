@@ -27,7 +27,7 @@ const service = axios.create({
 service.interceptors.request.use((req) => {
     const headers = req.headers
     const { token } = storage.getItem('userInfo') || {}
-    if (!headers.Authorization) headers.Authorization = 'Bearer' + token
+    if (!headers.Authorization) headers.Authorization = 'Bearer ' + token
     return req
 })
 
@@ -38,17 +38,19 @@ service.interceptors.request.use((req) => {
  */
 service.interceptors.response.use((res) => {
     const { code, data, msg } = res.data;
-    if (code === 200) {
+    if (code === 200 || code === 0) {
         return data;
-    } else if (code === 50001) {
+    } else if (code === 40001) {
         ElMessage.error(TOKEN_INVALID)
         setTimeout(() => {
             router.push('/login')
         }, 1500)
-        return Promise.reject(TOKEN_INVALID)
+        // return Promise.reject(TOKEN_INVALID,res,data)
+        return Promise.reject(res.data)
     } else {
         ElMessage.error(msg || NETWORK_ERROR)
-        return Promise.reject(msg || NETWORK_ERROR)
+        // return Promise.reject(msg || NETWORK_ERROR,res.data)
+        return Promise.reject(res.data)
     }
 })
 
@@ -59,27 +61,27 @@ service.interceptors.response.use((res) => {
  */
 function request(options) {
     options.methods = options.method || 'get'
-    if(options.method.toLowerCase() === 'get'){
+    if (options.method.toLowerCase() === 'get') {
         options.params = options.data
     }
-    if(typeof options.mock != 'undefined'){
+    if (typeof options.mock != 'undefined') {
         config.mock = options.mock
     }
     // prod 生产环境
-    if(config.env === 'prod'){
+    if (config.env === 'prod') {
         service.defaults.baseURL = config.baseApi
-    }else{ 
-        service.defaults.baseURL = config.mock ? config.mockApi:config.baseApi
+    } else {
+        service.defaults.baseURL = config.mock ? config.mockApi : config.baseApi
     }
     return service(options)
 }
 
-['get','post','put','delete','patch'].forEach((item)=>{
-    request[item] = (url,data,options)=> {
+['get', 'post', 'put', 'delete', 'patch'].forEach((item) => {
+    request[item] = (url, data, options) => {
         return request({
             url,
             data,
-            method:item,
+            method: item,
             ...options
         })
     }

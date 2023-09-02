@@ -1,51 +1,43 @@
 <template>
-  <!-- 基本布局 -->
   <div class="basic-layout">
     <!-- 导航栏 -->
-    <div :class="['nav-side',isCollapse?'fold':'unfold']">
+    <div :class="['nav-side', isCollapse ? 'fold' : 'unfold']">
       <div class="logo">
         <img src="./../assets/images/logoBird.png" alt="">
         <span>Manager</span>
-        <cat />
       </div>
       <!-- 导航菜单 -->
-      <el-menu
-        default-active="activeMenu"
-        background-color="#4C5DA1"
-        text-color="#fff"
-        router
-        :collapse="isCollapse"
-        class="nav-menu"
-      >
-        <TreeMenu :userMenu="userMenu"/>
+      <el-menu :default-active="activeMenu" background-color="#4C5DA1" text-color="#fff" router :collapse="isCollapse"
+        class="nav-menu">
+        <TreeMenu :userMenu="userMenu" />
       </el-menu>
     </div>
     <!-- 右侧内容 -->
     <div :class="['content-right',
-         isCollapse?'fold':'unfold']"
-    >
+      isCollapse ? 'fold' : 'unfold']">
       <div class="nav-top">
         <nav class="nav-left">
-           <!-- 导航栏收缩展开按钮 -->
+          <!-- 导航栏收缩展开按钮 -->
           <div class="menu-fold" @click="toggle">
-            <el-icon><Fold /></el-icon>
+            <el-icon>
+              <Fold />
+            </el-icon>
           </div>
           <div class="bread">
             <BreadCrumb />
           </div>
         </nav>
         <div class="user-info">
-          <el-badge :is-dot="noticeCount>0 ? true:false" class="bell">
-            <el-icon><Bell /></el-icon>
+          <el-badge :is-dot="noticeCount > 0 ? true : false" class="bell">
+            <el-icon>
+              <Bell />
+            </el-icon>
           </el-badge>
           <el-dropdown @command="handleLogout">
             <span class="user-dropdown-link">
-              <!-- {{ userInfo.userName }} -->
               <div>
-                <el-avatar
-                  src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-                />
-                <el-icon class="user-icon--right">
+                <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+                <el-icon class="user-icon-right">
                   <arrow-down />
                 </el-icon>
               </div>
@@ -64,76 +56,73 @@
       </div>
       <!-- 承接页面 -->
       <div class="wrapper">
-        <div class="main-page">
-          <router-view></router-view>
-        </div>
+        <router-view></router-view>
       </div>
     </div>
   </div>
 </template>
 
 <script >
-import TreeMenu from './TreeMenu.vue'
-import BreadCrumb from './BreadCrumb.vue'
-  export default{
-    name: 'Home',
-    components:{
-      TreeMenu,
-      BreadCrumb
+import TreeMenu from '@/components/TreeMenu.vue'
+import BreadCrumb from '@/components/BreadCrumb.vue'
+export default {
+  name: 'Home',
+  components: { TreeMenu, BreadCrumb },
+  data() {
+    return {
+      isCollapse: false, // 侧边栏伸缩
+      userInfo: this.$store.state.userInfo,
+      noticeCount: 0, // 右上角小铃铛红点，0没有红点，>=1有红点
+      userMenu: [],  // 菜单
+      activeMenu: location.hash.slice(1)
+    }
+  },
+  computed: {
+    noticeCount() {
+      return this.$store.state.noticeCount;
     },
-    data() {
-      return {
-        isCollapse:false, // 侧边栏伸缩
-        userInfo:this.$store.state.userInfo,
-        noticeCount:0, // 右上角小铃铛红点，0没有红点，>=1有红点
-        userMenu:[],  // 菜单
-        activeMenu: location.hash.slice(1)
+  },
+  mounted() {
+    this.getNoticeCount()
+    this.getMenuList()
+  },
+  methods: {
+    // 控制菜单伸缩
+    toggle() {
+      this.isCollapse = !this.isCollapse
+    },
+    // 点击头像
+    handleLogout(key) {
+      if (key == "email") return
+      this.$store.commit("saveUserInfo", "")
+      this.userInfo = {}
+      this.$router.push("/login")
+    },
+    async getNoticeCount() {
+      try {
+        const count = await this.$api.noticeCount()
+        this.getNoticeCount = count
+      } catch (error) {
+        console.error(error)
       }
     },
-    mounted(){
-      this.getNoticeCount()
-      this.getMenuList()
-    },
-    methods:{
-      // 控制菜单伸缩
-      toggle() {
-        this.isCollapse = !this.isCollapse
-      },
-      // 点击头像
-      handleLogout(key){
-        if(key == 'email') return;
-        else if(key == 'userinfo'){
-          this.$router.push('/userinfo')
-        }else if(key == 'logout'){
-          this.$store.commit('saveUserInfo','');
-          this.userInfo = null;
-          this.$router.push('/login')
-        }
-      },
-      async getNoticeCount(){
-        try {
-          const count = await this.$api.noticeCount()
-          this.noticeCount = count
-        }catch(error){
-          console.error(error)
-        }
-      },
-      async getMenuList(){
-        try {
-          const list = await this.$api.menuList()
-          this.userMenu = list
-        }catch(error){
-          console.error(error)
-        }
+    async getMenuList() {
+      try {
+        const list = await this.$api.getMenuList()
+        this.userMenu = list
+      } catch (error) {
+        console.error(error)
       }
     }
   }
+}
 </script>
 
 <style lang="scss">
-.basic-layout{
+.basic-layout {
   position: relative;
-  .nav-side{
+
+  .nav-side {
     // 固定定位
     position: fixed;
     width: 250px;
@@ -146,42 +135,52 @@ import BreadCrumb from './BreadCrumb.vue'
     overflow-y: auto;
     // 打开或者收起宽度有一个过度效果
     transition: width 0.5s;
+
     .title-size {
       font-size: 18px;
     }
+
     .logo {
       display: flex;
       align-items: center;
       font-size: 20px;
       height: 5%;
+
       img {
         margin: 0 20px;
         width: 35px;
         height: 35px;
       }
     }
+
     .nav-menu {
       // height: calc(100vh - 60px);
       border-right: none;
     }
+
     // 合并
-    &.fold{
+    &.fold {
       width: 75px;
     }
+
     // 展开
-    &.unfold{
+    &.unfold {
       width: 250px;
     }
   }
-  .content-right{
-    margin-left:250px;
+
+  .content-right {
+    margin-left: 250px;
     transition: width 1s;
-    &.fold{
+
+    &.fold {
       margin-left: 75px;
     }
-    &.unfold{
+
+    &.unfold {
       margin-left: 250px;
     }
+
     .nav-top {
       height: 50px;
       line-height: 50px;
@@ -191,9 +190,11 @@ import BreadCrumb from './BreadCrumb.vue'
       border-bottom: 1px solid #ddd;
       padding: 0 20px;
       font-size: 18px;
+
       .nav-left {
         display: flex;
         align-items: center;
+
         .menu-fold {
           padding-right: 20px;
           line-height: 20px;
@@ -201,29 +202,34 @@ import BreadCrumb from './BreadCrumb.vue'
           cursor: pointer;
         }
       }
+
       .user-info {
-          .bell {
-            line-height: 30px;
-            margin-right: 20px;
-            cursor: pointer;
-          }
-          .user-dropdown-link{
-            margin-right: 20px;
-            cursor: pointer;
-            .user-icon--right{
+        .bell {
+          line-height: 30px;
+          margin-right: 20px;
+          cursor: pointer;
+        }
+
+        .user-dropdown-link {
+          margin-right: 20px;
+          cursor: pointer;
+
+          .user-icon-right {
             // position: fixed;
             // bottom: 100px;
-              margin-left: 10px;
-            }
+            margin-left: 10px;
           }
-          
+        }
+
       }
     }
-    .wrapper{
+
+    .wrapper {
       background-color: #eef0f3;
-      padding:20px;
+      padding: 20px;
       // box-sizing 盒模型是border-box，padding值是不会计算在内的，wapper的宽高是包含padding值的，所以减去50px就好
       height: calc(100vh - 50px);
+
       .main-page {
         background-color: #fff;
         height: 100%;

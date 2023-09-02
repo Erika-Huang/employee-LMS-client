@@ -14,7 +14,9 @@ export default defineConfig({
       open:true,
       proxy:{
         "/api":{
-          target:"http://localhost:3000"
+          target:"http://localhost:3000",
+          // target:"http://api-manager.marsview.cc",
+          changeOrigin:true
         }
       }
   },

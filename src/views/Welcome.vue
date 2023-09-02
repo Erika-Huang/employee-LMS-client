@@ -14,8 +14,8 @@
 export default {
   name: 'welcome',
   components: {
-      
-    },
+
+  },
 }
 
 </script>
@@ -26,26 +26,32 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
+  background-color: #fff;
+
   .content {
     position: relative;
     bottom: 40px;
-    .sub-title{
+
+    .sub-title {
       font-size: 40px;
       line-height: 52px;
       color: #333e6b;
     }
-    .title{
+
+    .title {
       font-size: 70px;
       line-height: 90px;
       color: #8A9FF2;
     }
-    .desc{
+
+    .desc {
       text-align: right;
       line-height: 50px;
       font-size: 14px;
       color: #b2b9d6;
     }
   }
+
   .img {
     margin-left: 105px;
     background-image: url('./../assets/images/pleaseSelect.svg');
