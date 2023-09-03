@@ -72,7 +72,7 @@ export default {
     return {
       isCollapse: false, // 侧边栏伸缩
       userInfo: this.$store.state.userInfo,
-      noticeCount: 0, // 右上角小铃铛红点，0没有红点，>=1有红点
+      // noticeCount: 0, // 右上角小铃铛红点，0没有红点，>=1有红点
       userMenu: [],  // 菜单
       activeMenu: location.hash.slice(1)
     }

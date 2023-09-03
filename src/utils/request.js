@@ -60,18 +60,19 @@ service.interceptors.response.use((res) => {
  * @returns service(options)
  */
 function request(options) {
-    options.methods = options.method || 'get'
+    options.method = options.method || 'get'
     if (options.method.toLowerCase() === 'get') {
         options.params = options.data
     }
+    let isMock = config.mock
     if (typeof options.mock != 'undefined') {
-        config.mock = options.mock
+        isMock = options.mock
     }
     // prod 生产环境
     if (config.env === 'prod') {
         service.defaults.baseURL = config.baseApi
     } else {
-        service.defaults.baseURL = config.mock ? config.mockApi : config.baseApi
+        service.defaults.baseURL = isMock ? config.mockApi : config.baseApi
     }
     return service(options)
 }

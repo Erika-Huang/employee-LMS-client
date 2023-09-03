@@ -32,14 +32,14 @@
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" :formatter="item.formatter">
         </el-table-column>
-        <el-table-column label="操作" width="150">
-          <template #default="{ row }">
-            <el-button @click="handleEdit(row)" size="small">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
+        <el-table-column label="操作" width="180">
+          <template #default="scope">
+            <el-button @click="handleEdit(scope.row)" type="primary">编辑</el-button>
+            <el-button type="danger" @click="handleDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination class="pagination" background layout="prev, pager, next" :total="pager.total"
+      <el-pagination class="pagination" background layout="prev, pager, next" :total="Number(pager.total)"
         :page-size="pager.pageSize" @current-change="handleCurrentChange" />
     </div>
 
@@ -158,10 +158,12 @@ export default {
       {
         label: "用户ID",
         prop: "userId",
+        width: '150'
       },
       {
         label: "用户名",
         prop: "userName",
+        width: '150'
       },
       {
         label: "用户邮箱",
@@ -236,13 +238,17 @@ export default {
       pager.pageNum = current;
       getUserList();
     };
-    // 删除
+    // 用户单个软删除
     const handleDel = async (row) => {
-      await proxy.$api.userDel({
-        userIds: [row.userId], // 可单个删除,也可批量删除
-      });
-      proxy.$message.success("删除成功");
-      getUserList();
+      try {
+        await proxy.$api.userDel({
+          userIds: [row.userId], // 可单个删除,也可批量删除
+        })
+        proxy.$message.success("删除成功");
+        getUserList();
+      } catch (error) {
+        console.log(error);
+      }
     };
     // 批量删除
     const handlePatchDel = async () => {
