@@ -140,7 +140,7 @@ export default {
       ],
       mobile: [
         {
-          pattern: /1[3-9]\d{9}/,
+          pattern: /1[3-9]\d{9}/g,
           message: "请输入正确的手机号格式",
           trigger: "blur",
         },
@@ -256,6 +256,7 @@ export default {
         proxy.$message.error("请选择要删除的用户");
         return;
       }
+      console.log(checkedUserIds)
       const res = await proxy.$api.userDel({
         userIds: checkedUserIds.value, // 可单个删除,也可以批量删除
       });
