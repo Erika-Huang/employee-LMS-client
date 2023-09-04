@@ -315,13 +315,11 @@ export default {
           params.userEmail += "@erika.com";
           params.action = action.value;
           let res = await proxy.$api.userSubmit(params);
-          if (res) {
-            // 关闭弹框
-            showModal.value = false;
-            proxy.$message.success("用户创建成功");
-            handleReset("dialogForm");
-            getUserList();  // 刷新列表
-          }
+          // 关闭弹框
+          showModal.value = false;
+          proxy.$message.success("用户创建成功");
+          handleReset("dialogForm");
+          getUserList();  // 刷新列表
         }
       });
     };
