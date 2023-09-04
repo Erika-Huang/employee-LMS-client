@@ -42,6 +42,7 @@ service.interceptors.response.use((res) => {
         return data;
     } else if (code === 40001) {
         ElMessage.error(TOKEN_INVALID)
+        // return Promise.reject(res.data)
         setTimeout(() => {
             router.push('/login')
         }, 1500)
