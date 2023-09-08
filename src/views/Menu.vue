@@ -22,7 +22,7 @@
         <el-button type="primary" @click="handleAdd(1)">新增</el-button>
       </div>
       <el-table :data="menuList" row-key="_id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-        <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
+        <el-table-column v-for="item of columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" :formatter="item.formatter">
         </el-table-column>
         <el-table-column label="操作" width="250">
@@ -52,7 +52,7 @@
           <el-input v-model="menuForm.menuName" placeholder="请输入菜单名称" />
         </el-form-item>
         <el-form-item label="菜单图标" prop="icon" v-show="menuForm.menuType == 1">
-          <el-row v-model="menuForm.menuCode">
+          <!-- <el-row v-model="menuForm.menuCode">
             <el-col :span="8">
               <el-dropdown>
                 <el-button type="primary">
@@ -82,7 +82,8 @@
                 </template>
               </el-dropdown>
             </el-col>
-          </el-row>
+          </el-row> -->
+          <el-input v-model="menuForm.icon" placeholder="请输入菜单图标" />
         </el-form-item>
         <el-form-item label="路由地址" prop="path" v-show="menuForm.menuType == 1">
           <el-input v-model="menuForm.path" placeholder="请输入路由地址" />
@@ -181,6 +182,7 @@ export default {
       ],
       showModal: false,
       menuForm: {
+        parentId: [null],
         menuType: 1,
         menuState: 1
       },
@@ -221,7 +223,7 @@ export default {
       this.getMenuList()
     },
     // 表单重置
-    handleReset() {
+    handleReset(form) {
       this.$refs[form].resetFields()
     },
     // 新增表单
@@ -258,7 +260,7 @@ export default {
           let { params } = { ...menuForm, action }
           let res = await this.$api.menuSubmit(params)
           this.showModal = false
-          this.$message.success('操作成功')
+          this.$message.success('创建成功')
           this.handleReset('dialogForm')
           this.getMenuList()
         }
