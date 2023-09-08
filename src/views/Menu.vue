@@ -21,8 +21,8 @@
       <div class="action">
         <el-button type="primary" @click="handleAdd(1)">新增</el-button>
       </div>
-      <el-table :data="menuList" row-key="_id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-        <el-table-column v-for="item of columns" :key="item.prop" :prop="item.prop" :label="item.label"
+      <el-table :data="menuList" row-key="_id" :tree-props="{ children: 'children' }">
+        <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" :formatter="item.formatter">
         </el-table-column>
         <el-table-column label="操作" width="250">
@@ -94,7 +94,7 @@
         <el-form-item label="组件路径" prop="component" v-show="menuForm.menuType == 1">
           <el-input v-model="menuForm.component" placeholder="请输入组件路径" />
         </el-form-item>
-        <el-form-item label="菜单状态" prop="menuState">
+        <el-form-item label="菜单状态" prop="menuState" v-show="menuForm.menuType == 1">
           <el-radio-group v-model="menuForm.menuState">
             <el-radio :label="1">正常</el-radio>
             <el-radio :label="2">停用</el-radio>
@@ -111,14 +111,14 @@
   </div>
 </template>
 <script>
-import {
-  ArrowDown,
-  Check,
-  CircleCheck,
-  CirclePlus,
-  CirclePlusFilled,
-  Plus,
-} from '@element-plus/icons-vue'
+// import {
+//   ArrowDown,
+//   Check,
+//   CircleCheck,
+//   CirclePlus,
+//   CirclePlusFilled,
+//   Plus,
+// } from '@element-plus/icons-vue'
 import utils from "./../utils/utils";
 
 export default {
@@ -213,10 +213,10 @@ export default {
       try {
         let list = await this.$api.getMenuList(this.queryForm)
         this.menuList = list
+
       } catch (error) {
         throw new Error(error)
       }
-
     },
     // 查询
     handleQuery() {
@@ -229,13 +229,14 @@ export default {
     // 新增表单
     handleAdd(type, row) {
       this.showModal = true
-      this.action == 'add'
+      this.action = 'add'
       if (type == 2) {
         this.menuForm.parentId = [...row.parentId, row._id].filter(
           (item) => item
         )
       }
     },
+    // 编辑
     handleEdit(row) {
       this.showModal = true
       this.action = 'edit'
@@ -247,6 +248,7 @@ export default {
         Object.assign(this.menuForm, row)
       })
     },
+    // 删除
     async handleDel(_id) {
       await this.$api.menuSubmit({ _id, action: 'delete' })
       this.$message.success('删除成功')
@@ -257,7 +259,7 @@ export default {
       this.$refs.dialogForm.validate(async (valid) => {
         if (valid) {
           let { action, menuForm } = this
-          let { params } = { ...menuForm, action }
+          let params = { ...menuForm, action }
           let res = await this.$api.menuSubmit(params)
           this.showModal = false
           this.$message.success('创建成功')
