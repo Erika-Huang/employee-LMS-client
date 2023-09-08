@@ -1,19 +1,14 @@
 <template>
   <div class="user-manage">
     <div class="query-form">
-      <el-form ref="form" :inline="true" :model="user">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="user.userId" placeholder="请输入用户ID" />
+      <el-form ref="form" :inline="true" :model="queryForm">
+        <el-form-item label="菜单名称" prop="menuName">
+          <el-input v-model="queryForm.menuName" placeholder="请输入菜单名称" />
         </el-form-item>
-        <el-form-item label="用户名称" prop="userName">
-          <el-input v-model="user.userName" placeholder="请输入用户名称" />
-        </el-form-item>
-        <el-form-item label="状态" prop="state">
-          <el-select v-model="user.state">
-            <el-option :value="0" label="所有"></el-option>
-            <el-option :value="1" label="在职"></el-option>
-            <el-option :value="2" label="离职"></el-option>
-            <el-option :value="3" label="试用期"></el-option>
+        <el-form-item label="菜单状态" prop="menuState">
+          <el-select v-model="queryForm.menuState">
+            <el-option :value="1" label="正常"></el-option>
+            <el-option :value="2" label="停用"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -24,57 +19,81 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleCreate">新增</el-button>
-        <el-button type="danger" @click="handlePatchDel">批量删除</el-button>
+        <el-button type="primary" @click="handleAdd(1)">新增</el-button>
       </div>
-      <el-table :data="userList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" />
+      <el-table :data="menuList" row-key="_id" :tree-props="{ children: 'children' }">
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" :formatter="item.formatter">
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="250">
           <template #default="scope">
+            <el-button @click="handleAdd(2, scope.row)">新增</el-button>
             <el-button @click="handleEdit(scope.row)" type="primary">编辑</el-button>
             <el-button type="danger" @click="handleDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination class="pagination" background layout="prev, pager, next" :total="Number(pager.total)"
-        :page-size="pager.pageSize" @current-change="handleCurrentChange" />
     </div>
-
     <!-- 新增/编辑弹框 -->
     <el-dialog width="35%" title="用户新增" v-model="showModal">
-      <el-form ref="dialogForm" :model="userForm" label-width="100px" :rules="rules">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="userForm.userName" :disabled="action == 'edit'" placeholder="请输入用户名称" />
+      <el-form ref="dialogForm" :model="menuForm" label-width="100px" :rules="rules">
+        <el-form-item label="父级菜单" prop="parentId">
+          <el-cascader v-model="menuForm.parentId" :options="menuList"
+            :prop="{ checkStrictly: true, value: '_id', label: 'menuName' }" clearable />
+          <span>&nbsp; 不选,则直接创建一级菜单</span>
         </el-form-item>
-        <el-form-item label="邮箱" prop="userEmail">
-          <el-input v-model="userForm.userEmail" :disabled="action == 'edit'" placeholder="请输入用户邮箱">
-            <template #append>@erika.com</template>
-          </el-input>
+        <el-form-item label="菜单类型" prop="menuType">
+          <el-radio-group v-model="menuForm.menuType">
+            <el-radio :label="1">菜单</el-radio>
+            <el-radio :label="2">按钮</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="userForm.mobile" placeholder="请输入手机号" />
+        <el-form-item label="菜单名称" prop="menuName">
+          <el-input v-model="menuForm.menuName" placeholder="请输入菜单名称" />
         </el-form-item>
-        <el-form-item label="岗位" prop="job">
-          <el-input v-model="userForm.job" placeholder="请输入岗位" />
+        <el-form-item label="菜单图标" prop="icon" v-show="menuForm.menuType == 1">
+          <el-row v-model="menuForm.menuCode">
+            <el-col :span="8">
+              <el-dropdown>
+                <el-button type="primary">
+                  <el-icon size="21px">
+                    <component :is="menuForm.icon"></component>
+                  </el-icon>
+                  {{ menuForm.icon }}<el-icon><arrow-down /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item :icon="Plus">
+                      <el-icon size="21px">
+                        <component :is="menuForm.icon"></component>
+                      </el-icon>
+                    </el-dropdown-item>
+                    <el-dropdown-item :icon="CirclePlusFilled">
+                      Action 2
+                    </el-dropdown-item>
+                    <el-dropdown-item :icon="CirclePlus">Action 3</el-dropdown-item>
+                    <el-dropdown-item :icon="Check">Action 4</el-dropdown-item>
+                    <el-dropdown-item :icon="CircleCheck">Action 5</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </el-col>
+          </el-row>
         </el-form-item>
-        <el-form-item label="状态" prop="state">
-          <el-select v-model="userForm.state">
-            <el-option :value="1" label="在职"></el-option>
-            <el-option :value="2" label="离职"></el-option>
-            <el-option :value="3" label="试用期"></el-option>
-          </el-select>
+        <el-form-item label="路由地址" prop="path" v-show="menuForm.menuType == 1">
+          <el-input v-model="menuForm.path" placeholder="请输入路由地址" />
         </el-form-item>
-        <el-form-item label="系统角色" prop="roleList">
-          <el-select v-model="userForm.roleList" placeholder="请选择用户系统角色" multiple style="width: 100%">
-            <el-option v-for="role in roleList" :key="role._id" :label="role.roleName" :value="role._id"></el-option>
-          </el-select>
+        <el-form-item label="权限标识" prop="menuCode" v-show="menuForm.menuType == 2">
+          <el-input v-model="menuForm.menuCode" placeholder="请输入权限标识" />
         </el-form-item>
-        <el-form-item label="部门" prop="deptId">
-          <el-cascader v-model="userForm.deptId" placeholder="请选择所属部门" :options="deptList" :props="prop" clearable
-            style="width: 100%"></el-cascader>
+        <el-form-item label="组件路径" prop="component" v-show="menuForm.menuType == 1">
+          <el-input v-model="menuForm.component" placeholder="请输入组件路径" />
+        </el-form-item>
+        <el-form-item label="菜单状态" prop="menuState">
+          <el-radio-group v-model="menuForm.menuState">
+            <el-radio :label="1">正常</el-radio>
+            <el-radio :label="2">停用</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -87,279 +106,162 @@
   </div>
 </template>
 <script>
-import { getCurrentInstance, onMounted, reactive, ref, toRaw } from "vue";
+import {
+  ArrowDown,
+  Check,
+  CircleCheck,
+  CirclePlus,
+  CirclePlusFilled,
+  Plus,
+} from '@element-plus/icons-vue'
 import utils from "./../utils/utils";
 
 export default {
   name: "user",
-  setup() {
-    // 获取Composition API 上下文对象
-    const { ctx, proxy } = getCurrentInstance();
-    // 初始化用户表单对象
-    const user = reactive({
-      state: 1,
-    });
-    // 初始化用户列表数据
-    const userList = ref([]);
-    // 初始化分页对象
-    const pager = reactive({
-      pageNum: 1,
-      pageSize: 10,
-    });
-    // 选中用户列表对象
-    const checkedUserIds = ref([]);
-    // 弹框显示对象
-    const showModal = ref(false);
-    // 新增用户Form对象
-    const userForm = reactive({
-      state: 3,
-    });
-    // 角色列表
-    const roleList = ref([]);
-    // 部门列表
-    const deptList = ref([]);
-    // 定义用户操作行为
-    const action = ref("add");
-    // prop
-    const prop = reactive({
-      checkStrictly: true,
-      value: '_id',
-      label: 'deptName'
-    })
-    // 定义表单校验规则
-    const rules = reactive({
-      userName: [
+  data() {
+    return {
+      queryForm: {
+        menuState: 1,
+      },
+      menuList: [],
+      columns: [
         {
-          required: true,
-          message: "请输入用户名称",
-          trigger: "blur",
+          label: '菜单名称',
+          prop: 'menuName',
+          width: 180
         },
-      ],
-      userEmail: [
-        { required: true, message: "请输入用户邮箱", trigger: "blur" },
-      ],
-      mobile: [
         {
-          pattern: /1[3-9]\d{9}/,
-          message: "请输入正确的手机号格式",
-          trigger: "blur",
+          label: '图标',
+          prop: 'icon'
         },
-      ],
-      deptId: [
         {
-          required: true,
-          message: "请选择部门",
-          trigger: "blur",
+          label: '菜单类型',
+          prop: 'menuType',
+          formatter(row, column, value) {
+            return {
+              '1': '菜单',
+              '2': '按钮',
+            }[value]
+          }
         },
-      ],
-    });
-    // 定义动态表格-格式
-    const columns = reactive([
-      {
-        label: "用户ID",
-        prop: "userId",
-        width: '150'
-      },
-      {
-        label: "用户名",
-        prop: "userName",
-        width: '150'
-      },
-      {
-        label: "用户邮箱",
-        prop: "userEmail",
-      },
-      {
-        label: "用户角色",
-        prop: "role",
-        formatter(row, column, value) {
-          return {
-            0: "管理员",
-            1: "普通用户",
-          }[value];
+        {
+          label: '权限标识',
+          prop: 'menuCode'
         },
-      },
-      {
-        label: "用户状态",
-        prop: "state",
-        formatter(row, column, value) {
-          return {
-            1: "在职",
-            2: "离职",
-            3: "试用期",
-          }[value];
+        {
+          label: '路由地址',
+          prop: 'path'
         },
-      },
-      {
-        label: "注册时间",
-        prop: "createTime",
-        width: 180,
-        formatter: (row, column, value) => {
-          return utils.formateDate(new Date(value));
+        {
+          label: '组件路径',
+          prop: ''
         },
-      },
-      {
-        label: "最后登录时间",
-        prop: "lastLoginTime",
-        width: 180,
-        formatter: (row, column, value) => {
-          return utils.formateDate(new Date(value));
+        {
+          label: '菜单状态',
+          prop: 'menuState',
+          formatter(row, column, value) {
+            return {
+              '1': '正常',
+              '2': '停用',
+            }[value]
+          }
         },
-      },
-    ]);
-
-    // 初始化接口调用
-    onMounted(() => {
-      getUserList();
-      getRoleAllList();
-      getDeptList();
-    });
-    // 获取用户列表
-    const getUserList = async () => {
-      let params = { ...user, ...pager };
-      try {
-        const { list, page } = await proxy.$api.getUserList(params);
-        userList.value = list;
-        pager.total = page.total;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    // 查询
-    const handleQuery = () => {
-      getUserList();
-    };
-    // 重置
-    const handleReset = (form) => {
-      proxy.$refs[form].resetFields();
-    };
-    // 分页
-    const handleCurrentChange = (current) => {
-      pager.pageNum = current;
-      getUserList();
-    };
-    // 用户单个软删除
-    const handleDel = async (row) => {
-      try {
-        await proxy.$api.userDel({
-          userIds: [row.userId], // 可单个删除,也可批量删除
-        })
-        proxy.$message.success("删除成功");
-        getUserList();
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    // 批量删除
-    const handlePatchDel = async () => {
-      if (checkedUserIds.value.length == 0) {
-        proxy.$message.error("请选择要删除的用户");
-        return;
-      }
-      const res = await proxy.$api.userDel({
-        userIds: checkedUserIds.value, // 可单个删除,也可以批量删除
-      });
-      if (res.nModified > 0) {
-        proxy.$message.success("删除成功");
-        getUserList();
-      } else {
-        proxy.$message.success("删除失败");
-      }
-    };
-    // 表格多选
-    const handleSelectionChange = (list) => {
-      let arr = [];
-      list.map((item) => {
-        arr.push(item.userId);
-      });
-      checkedUserIds.value = list;
-    };
-    // 用户新增
-    const handleCreate = () => {
-      action.value = "add";
-      showModal.value = true;
-    };
-    // 获取角色
-    const getRoleAllList = async () => {
-      try {
-        let res = await proxy.$api.getRoleAllList();
-        roleList.value = res;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    // 获取部门
-    const getDeptList = async () => {
-      try {
-        let res = await proxy.$api.getDeptList();
-        deptList.value = res;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    // 用户弹窗关闭
-    const handleClose = () => {
-      try {
-        showModal.value = false;
-        handleReset("dialogForm");
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    // 用户提交
-    const handleSubmit = () => {
-      proxy.$refs.dialogForm.validate(async (valid) => {
-        if (valid) {
-          let params = toRaw(userForm);
-          params.userEmail += "@erika.com";
-          params.action = action.value;
-          let res = await proxy.$api.userSubmit(params);
-          if (res) {
-            // 关闭弹框
-            showModal.value = false;
-            proxy.$message.success("用户创建成功");
-            handleReset("dialogForm");
-            getUserList();  // 刷新列表
+        {
+          label: '创建时间',
+          prop: 'createTime',
+          width: '170',
+          formatter(row, column, value) {
+            return utils.formateDate(new Date(value))
           }
         }
-      });
-    };
-    // 用户编辑
-    const handleEdit = (row) => {
-      action.value = "edit";
-      showModal.value = true;
-      // 弹窗出来之后再赋值
-      proxy.$nextTick(() => {
-        Object.assign(userForm, row); // 浅拷贝
-      });
-    };
-    return {
-      user,
-      userList,
-      columns,
-      pager,
-      checkedUserIds,
-      showModal,
-      userForm,
-      prop,
-      rules,
-      roleList,
-      deptList,
-      action,
-      getUserList,
-      handleQuery,
-      handleReset,
-      handleCurrentChange,
-      handleDel,
-      handlePatchDel,
-      handleSelectionChange,
-      handleCreate,
-      getRoleAllList,
-      getDeptList,
-      handleClose,
-      handleSubmit,
-      handleEdit,
-    };
+      ],
+      showModal: false,
+      menuForm: {
+        menuType: 1,
+        menuState: 1
+      },
+      action: '',
+      rules: {
+        menuName: [
+          {
+            required: true,
+            message: '请输入菜单名称',
+            trigger: 'blur'
+          },
+          {
+            min: 2,
+            max: 10,
+            message: '长度在2-8个字符',
+            trigger: 'blur'
+          }
+        ]
+      }
+    }
+  },
+  mounted() {
+    this.getMenuList()
+  },
+  methods: {
+    // 菜单列表初始化
+    async getMenuList() {
+      try {
+        let list = await this.$api.getMenuList(this.queryForm)
+        this.menuList = list
+      } catch (error) {
+        throw new Error(error)
+      }
+
+    },
+    // 查询
+    handleQuery() {
+      this.getMenuList()
+    },
+    // 表单重置
+    handleReset() {
+      this.$refs[form].resetFields()
+    },
+    // 新增表单
+    handleAdd(type, row) {
+      this.showModal = true
+      this.action == 'add'
+      if (type == 2) {
+        this.menuForm.parentId = [...row.parentId, row._id].filter(
+          (item) => item
+        )
+      }
+    },
+    handleEdit(row) {
+      this.showModal = true
+      this.action = 'edit'
+      this.menuForm = row
+      // 在DOM更新完之后的下一个阶段，才能获取表单的值。先让表单弹出来，
+      this.$nextTick(() => {
+        // 浅拷贝
+        Object.assign(this.menuForm, row)
+      })
+    },
+    handleDel() {
+
+    },
+    // 菜单操作-提交
+    handleSubmit() {
+      this.$refs.dialogForm.validate(async (valid) => {
+        if (valid) {
+          let { action, menuForm } = this
+          let { params } = { ...menuForm, action }
+          let res = await this.$api.menuSubmit(params)
+          this.showModal = false
+          this.$message.success('操作成功')
+          this.handleReset('dialogForm')
+          this.getMenuList()
+        }
+      })
+    },
+    // 弹框关闭
+    handleClose() {
+      this.showModal = false
+      this.handleReset('dialogForm')
+    }
   },
 };
 </script>

@@ -97,7 +97,7 @@ export default {
     const { proxy } = getCurrentInstance();
     // 初始化用户表单对象
     const user = reactive({
-      state: 1,
+      state: 0,
     });
     // 初始化用户列表数据
     const userList = ref([]);
