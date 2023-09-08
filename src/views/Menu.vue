@@ -21,7 +21,7 @@
       <div class="action">
         <el-button type="primary" @click="handleAdd(1)">新增</el-button>
       </div>
-      <el-table :data="menuList" row-key="_id" :tree-props="{ children: 'children' }">
+      <el-table :data="menuList" row-key="_id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" :formatter="item.formatter">
         </el-table-column>
@@ -29,7 +29,7 @@
           <template #default="scope">
             <el-button @click="handleAdd(2, scope.row)">新增</el-button>
             <el-button @click="handleEdit(scope.row)" type="primary">编辑</el-button>
-            <el-button type="danger" @click="handleDel(scope.row)">删除</el-button>
+            <el-button type="danger" @click="handleDel(scope.row._id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,12 +68,16 @@
                         <component :is="menuForm.icon"></component>
                       </el-icon>
                     </el-dropdown-item>
-                    <el-dropdown-item :icon="CirclePlusFilled">
-                      Action 2
+                    <el-dropdown-item :icon="Plus">
+                      <el-icon size="21px">
+                        <component :is="menuForm.icon"></component>
+                      </el-icon>
                     </el-dropdown-item>
-                    <el-dropdown-item :icon="CirclePlus">Action 3</el-dropdown-item>
-                    <el-dropdown-item :icon="Check">Action 4</el-dropdown-item>
-                    <el-dropdown-item :icon="CircleCheck">Action 5</el-dropdown-item>
+                    <el-dropdown-item :icon="Plus">
+                      <el-icon size="21px">
+                        <component :is="menuForm.icon"></component>
+                      </el-icon>
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -233,15 +237,18 @@ export default {
     handleEdit(row) {
       this.showModal = true
       this.action = 'edit'
-      this.menuForm = row
-      // 在DOM更新完之后的下一个阶段，才能获取表单的值。先让表单弹出来，
+      // 在DOM更新完之后的下一个阶段，才能获取表单的值。先让表单弹出来，然后v-dom全都渲染完成了，下一次更新的时候再去赋值
       this.$nextTick(() => {
-        // 浅拷贝
+        // 赋值的方式
+        // this.menuForm = row
+        // 浅拷贝的方式
         Object.assign(this.menuForm, row)
       })
     },
-    handleDel() {
-
+    async handleDel(_id) {
+      await this.$api.menuSubmit({ _id, action: 'delete' })
+      this.$message.success('删除成功')
+      this.getMenuList()
     },
     // 菜单操作-提交
     handleSubmit() {
