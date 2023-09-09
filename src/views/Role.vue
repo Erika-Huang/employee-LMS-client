@@ -21,7 +21,7 @@
         </el-table-column>
         <el-table-column label="操作" width="280">
           <template #default="scope">
-            <el-button type="primary">编辑</el-button>
+            <el-button>编辑</el-button>
             <el-button @click="handleEdit(scope.row)" type="primary">设置权限</el-button>
             <el-button type="danger">删除</el-button>
           </template>

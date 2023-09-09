@@ -39,7 +39,7 @@
       <el-form ref="dialogForm" :model="menuForm" label-width="100px" :rules="rules">
         <el-form-item label="父级菜单" prop="parentId">
           <el-cascader v-model="menuForm.parentId" :options="menuList"
-            :prop="{ checkStrictly: true, value: '_id', label: 'menuName' }" clearable />
+            :props="{ checkStrictly: true, value: '_id', label: 'menuName' }" clearable />
           <span>&nbsp; 不选,则直接创建一级菜单</span>
         </el-form-item>
         <el-form-item label="菜单类型" prop="menuType">
@@ -174,6 +174,7 @@ export default {
       try {
         let list = await this.$api.getMenuList(this.queryForm)
         this.menuList = list
+
       } catch (error) {
         throw new Error('错误', error)
       }
