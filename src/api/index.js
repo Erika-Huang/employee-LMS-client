@@ -62,7 +62,7 @@ export default {
     },
     getRoleAllList() {
         return request({
-            url: '/roles/alllist',
+            url: '/roles/all/list',
             method: 'get',
             data: {},
             mock: true

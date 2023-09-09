@@ -52,37 +52,6 @@
           <el-input v-model="menuForm.menuName" placeholder="请输入菜单名称" />
         </el-form-item>
         <el-form-item label="菜单图标" prop="icon" v-show="menuForm.menuType == 1">
-          <!-- <el-row v-model="menuForm.menuCode">
-            <el-col :span="8">
-              <el-dropdown>
-                <el-button type="primary">
-                  <el-icon size="21px">
-                    <component :is="menuForm.icon"></component>
-                  </el-icon>
-                  {{ menuForm.icon }}<el-icon><arrow-down /></el-icon>
-                </el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item :icon="Plus">
-                      <el-icon size="21px">
-                        <component :is="menuForm.icon"></component>
-                      </el-icon>
-                    </el-dropdown-item>
-                    <el-dropdown-item :icon="Plus">
-                      <el-icon size="21px">
-                        <component :is="menuForm.icon"></component>
-                      </el-icon>
-                    </el-dropdown-item>
-                    <el-dropdown-item :icon="Plus">
-                      <el-icon size="21px">
-                        <component :is="menuForm.icon"></component>
-                      </el-icon>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </el-col>
-          </el-row> -->
           <el-input v-model="menuForm.icon" placeholder="请输入菜单图标" />
         </el-form-item>
         <el-form-item label="路由地址" prop="path" v-show="menuForm.menuType == 1">
@@ -111,14 +80,6 @@
   </div>
 </template>
 <script>
-// import {
-//   ArrowDown,
-//   Check,
-//   CircleCheck,
-//   CirclePlus,
-//   CirclePlusFilled,
-//   Plus,
-// } from '@element-plus/icons-vue'
 import utils from "./../utils/utils";
 
 export default {
