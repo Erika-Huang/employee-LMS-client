@@ -12,7 +12,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button type="primary" @click="getMenuList">查询</el-button>
           <el-button @click="handleReset('form')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -122,7 +122,7 @@
 import utils from "./../utils/utils";
 
 export default {
-  name: "user",
+  name: "menus",
   data() {
     return {
       queryForm: {
@@ -213,14 +213,9 @@ export default {
       try {
         let list = await this.$api.getMenuList(this.queryForm)
         this.menuList = list
-
       } catch (error) {
-        throw new Error(error)
+        throw new Error('错误', error)
       }
-    },
-    // 查询
-    handleQuery() {
-      this.getMenuList()
     },
     // 表单重置
     handleReset(form) {
@@ -242,9 +237,9 @@ export default {
       this.action = 'edit'
       // 在DOM更新完之后的下一个阶段，才能获取表单的值。先让表单弹出来，然后v-dom全都渲染完成了，下一次更新的时候再去赋值
       this.$nextTick(() => {
-        // 赋值的方式
+        // 1.赋值的方式
         // this.menuForm = row
-        // 浅拷贝的方式
+        // 2.浅拷贝的方式
         Object.assign(this.menuForm, row)
       })
     },

@@ -280,15 +280,6 @@ export default {
       action.value = "add";
       showModal.value = true;
     };
-    // 获取角色
-    const getRoleAllList = async () => {
-      try {
-        let res = await proxy.$api.getRoleAllList();
-        roleList.value = res;
-      } catch (error) {
-        console.log(error);
-      }
-    };
     // 获取部门
     const getDeptList = async () => {
       try {
@@ -297,6 +288,11 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    };
+    // 角色列表查询
+    const getRoleAllList = async () => {
+      let list = await proxy.$api.getRoleAllList()
+      roleList.value = list
     };
     // 用户弹窗关闭
     const handleClose = () => {
@@ -355,6 +351,7 @@ export default {
       handleCreate,
       getRoleAllList,
       getDeptList,
+      getRoleAllList,
       handleClose,
       handleSubmit,
       handleEdit,
