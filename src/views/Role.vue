@@ -189,9 +189,11 @@ export default {
     handleCurrentChange() {
 
     },
+    // 关闭设置权限弹窗
     handlePermissionClose() {
       this.showPermission = false
     },
+    // 打开设置权限弹窗
     handleOpenPermission(row) {
       this.curRoleId = row._id
       this.curRoleName = row.roleName
@@ -201,18 +203,32 @@ export default {
         this.$refs.permissionTree.setCheckedKeys(checkedKeys)
       })
     },
-    handlePermissionSubmit() {
+    // 设置权限提交
+    async handlePermissionSubmit() {
       let nodes = this.$refs.permissionTree.getCheckedNodes()
       let halfKeys = this.$refs.permissionTree.getHalfCheckedKeys()
       let checkedKeys = []
       let parentKeys = []
       nodes.map(node => {
         if (!node.children) {
+          // 每一个选中的按钮
           checkedKeys.push(node._id)
         } else {
+          // 每一个选中的菜单
           parentKeys.push(node._id)
         }
       })
+      let params = {
+        _id: this.curRoleId,
+        permissionList: {
+          checkedKeys,
+          halfCheckedKeys: parentKeys.concat(halfKeys)
+        }
+      }
+      await this.$api.updatePermission(params)
+      this.showPermission = false
+      this.$message.success('设置成功')
+      this.getRoleList()
     }
   },
 };
