@@ -76,7 +76,7 @@ export default {
   name: "role",
   data() {
     return {
-      queryForm: {
+      queryForm: { // 查询角色表单名称
         roleName: '',
       },
       columns: [
@@ -90,7 +90,15 @@ export default {
         },
         {
           label: '权限列表',
-          prop: ''
+          prop: 'permissionList',
+          formatter: (row, column, value) => {
+            let names = []
+            let list = value.halfCheckedKeys || []
+            list.map(key => {
+              if (key) names.push(this.actionMap[key])
+            })
+            return names.join(',')
+          }
         },
         {
           label: '创建时间',
@@ -100,15 +108,15 @@ export default {
           }
         }
       ],
-      roleList: [],
-      pager: {
+      roleList: [], // 页面角色列表信息
+      pager: {  // 页面展示个数
         pageSize: 10,
         total: 0
       },
-      showModal: false,
-      action: 'create',
-      roleForm: {},
-      rules: {
+      showModal: false, // 角色创建 弹窗开关
+      action: 'create', // 按钮模式切换
+      roleForm: {}, // 角色表单
+      rules: { // 角色表单规则
         roleName: [
           {
             required: true,
@@ -116,10 +124,11 @@ export default {
           }
         ]
       },
-      showPermission: false,
-      curRoleId: '',
-      curRoleName: '',
-      menuList: []
+      showPermission: false, // 设置权限弹窗开关
+      curRoleId: '', // 选中权限的id
+      curRoleName: '', // 选中权限的Name
+      menuList: [], // 菜单列表
+      actionMap: {} // 菜单映射表
     }
 
   },
@@ -128,22 +137,24 @@ export default {
     this.getMenuList()
   },
   methods: {
-    // 菜单列表初始化
+    // 角色列表初始化
     async getRoleList() {
       try {
         let { list, page } = await this.$api.getRoleList(this.queryForm)
         this.roleList = list
         this.pager.total = page.total
       } catch (error) {
-        throw new Error('错误', error)
+        throw new Error('角色列表初始化错误=>', error)
       }
     },
+    // 菜单列表初始化
     async getMenuList() {
       try {
         let list = await this.$api.getMenuList()
         this.menuList = list
+        this.getActionMap(list)
       } catch (error) {
-        throw new Error('错误', error)
+        throw new Error('菜单列表初始化错误=>', error)
       }
     },
     // 表单重置
@@ -229,6 +240,23 @@ export default {
       this.showPermission = false
       this.$message.success('设置成功')
       this.getRoleList()
+    },
+    // 递归遍历，把key值转换为字典
+    getActionMap(list) {
+      let actionMap = {}
+      const deep = (arr) => {
+        while (arr.length) {
+          let item = arr.pop()
+          if (item.children && item.action) {
+            actionMap[item._id] = item.menuName
+          }
+          if (item.children && !item.action) {
+            deep(item.children)
+          }
+        }
+      }
+      deep(JSON.parse(JSON.stringify(list)))
+      this.actionMap = actionMap
     }
   },
 };
