@@ -140,7 +140,10 @@ export default {
     // 角色列表初始化
     async getRoleList() {
       try {
-        let { list, page } = await this.$api.getRoleList(this.queryForm)
+        let { list, page } = await this.$api.getRoleList({
+          ...this.queryForm,
+          ...this.pager,
+        })
         this.roleList = list
         this.pager.total = page.total
       } catch (error) {
