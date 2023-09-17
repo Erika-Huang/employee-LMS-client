@@ -60,12 +60,12 @@ export default {
             mock: true
         })
     },
-    getRoleAllList() {
+    getRoleAllList() { // 获取全量的角色列表
         return request({
-            url: '/roles/all/list',
+            url: '/roles/alllist',
             method: 'get',
             data: {},
-            mock: true
+            mock: false
         })
     },
     getDeptList() {
