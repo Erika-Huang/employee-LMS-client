@@ -97,7 +97,7 @@ export default {
             url: '/roles/operate',
             method: 'post',
             data: params,
-            mock: true
+            mock: false
         })
     },
     updatePermission(params) {

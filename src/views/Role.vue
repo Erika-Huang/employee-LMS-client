@@ -23,7 +23,7 @@
           <template #default="scope">
             <el-button @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="primary" @click="handleOpenPermission(scope.row)">设置权限</el-button>
-            <el-button type="danger" @click="handleDel(_id)">删除</el-button>
+            <el-button type="danger" @click="handleDel(scope.row._id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -43,7 +43,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handlePermissionClose">取 消</el-button>
+          <el-button @click="handleEditClose">取 消</el-button>
           <el-button type="primary" @click="handleSubmit">确 定</el-button>
         </span>
       </template>
@@ -61,7 +61,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="showPermission = false">取 消</el-button>
+          <el-button @click="handlePermissionClose">取 消</el-button>
           <el-button type="primary" @click="handlePermissionSubmit">确 定</el-button>
         </span>
       </template>
@@ -106,11 +106,19 @@ export default {
           formatter(row, column, value) {
             return utils.formateDate(new Date(value))
           }
+        },
+        {
+          label: '更新时间',
+          prop: 'updateTime',
+          formatter(row, column, value) {
+            return utils.formateDate(new Date(value))
+          }
         }
       ],
       roleList: [], // 页面角色列表信息
       pager: {  // 页面展示个数
         pageSize: 10,
+        pageNum: 1,
         total: 0
       },
       showModal: false, // 角色创建 弹窗开关
@@ -169,7 +177,11 @@ export default {
       this.action = 'edit'
       this.showModal = true
       this.$nextTick(() => {
-        this.roleForm = row
+        this.roleForm = {
+          _id: row._id,
+          roleName: row.roleName,
+          remark: row.remark
+        }
       })
     },
     // 角色添加
@@ -192,7 +204,6 @@ export default {
           let res = await this.$api.roleOperate(params)
           if (res) {
             this.showModal = false
-            this.showModal = false
             this.$message.success('创建成功')
             this.handleReset('dialogForm')
             this.getRoleList()
@@ -200,12 +211,19 @@ export default {
         }
       })
     },
-    handleCurrentChange() {
-
+    // 分页
+    handleCurrentChange(current) {
+      this.pager.pageNum = current
+      this.getRoleList()
     },
     // 关闭设置权限弹窗
     handlePermissionClose() {
       this.showPermission = false
+    },
+    // 关闭编辑弹窗
+    handleEditClose() {
+      this.handleReset("dialogForm");
+      this.showModal = false
     },
     // 打开设置权限弹窗
     handleOpenPermission(row) {
