@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import storage from './../utils/storage'
 // 导入需要的icon
 export default {
   name: 'login',
@@ -56,14 +57,31 @@ export default {
       this.$refs.userForm.validate((valid) => {
         if (valid) {
           // 调用登录接口
-          this.$api.login(this.user).then((res) => {
+          this.$api.login(this.user).then(async (res) => {
             this.$store.commit('saveUserInfo', res)
+            await this.loadAsyncRoutes()
             this.$router.push('/welcome')
           })
         } else {
           return false;
         }
       })
+    },
+    async loadAsyncRoutes() {
+      let userInfo = storage.getItem('userInfo') || {}
+      if (userInfo.token) {
+        try {
+          const { menuList } = await this.$api.getPermissionList()
+          let routes = utils.generateRoute(menuList)
+          routes.map(route => {
+            let url = `./../views/${route.component}.vue`
+            route.component = () => import(url);
+            this.router.addRoute("home", route);
+          })
+        } catch (error) {
+
+        }
+      }
     },
     goHome() {
       this.$router.push('/welcome')
