@@ -1,7 +1,7 @@
 <template>
     <div class="dept-manage">
         <div class="query-form">
-            <el-form :inline="true" ref="queryForm" :model="queryForm">
+            <el-form ref="queryForm" :inline="true" :model="queryForm">
                 <el-form-item label="部门名称">
                     <el-input placeholder="请输入部门名称" v-model="queryForm.deptName"></el-input>
                 </el-form-item>
@@ -25,7 +25,7 @@
                 </el-table-column>
             </el-table>
         </div>
-        <el-dialog :title="action == 'create' ? '创建部门' : '编辑部门'">
+        <el-dialog :title="action == 'create' ? '创建部门' : '编辑部门'" v-model="showModal">
             <el-form ref="dialogForm" :model="deptForm" :rules="rules" label-width="120px">
                 <el-form-item label="上级部门" prop="parentId">
                     <el-cascader placeholder="请选择上级部门" v-model="deptForm.parentId"
@@ -146,7 +146,7 @@ export default {
             this.showModal = true
             this.$nextTick(() => {
                 Object.assign(this.deptForm, row, {
-                    user: `${row.userId}/${row.userName}/${row.userEmail}`,
+                    user: `${row.userName}`,
                 })
             })
         },

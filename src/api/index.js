@@ -28,6 +28,14 @@ export default {
             mock: false
         })
     },
+    getPermissionList(params) {
+        return request({
+            url: '/users/getPermissionList',
+            method: 'get',
+            data: {},
+            mock: false
+        })
+    },
     getUserList(params) {
         return request({
             url: '/users/list',
@@ -41,7 +49,7 @@ export default {
             url: '/users/all/list',
             method: 'get',
             data: {},
-            mock: true
+            mock: false
         })
     },
     userDel(params) {
@@ -68,12 +76,12 @@ export default {
             mock: false
         })
     },
-    getDeptList() {
+    getDeptList(params) {
         return request({
             url: '/dept/list',
             method: 'get',
-            data: {},
-            mock: true
+            data: params,
+            mock: false
         })
     },
     deptOperate(params) {
@@ -81,7 +89,7 @@ export default {
             url: '/dept/operate',
             method: 'post',
             data: params,
-            mock: true
+            mock: false
         })
     },
     userSubmit(params) {
