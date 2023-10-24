@@ -72,14 +72,14 @@ export default {
     return {
       isCollapse: false, // 侧边栏伸缩
       userInfo: this.$store.state.userInfo,
-      // noticeCount: 0, // 右上角小铃铛红点，0没有红点，>=1有红点
+      noticeCount: 0, // 右上角小铃铛红点，0没有红点，>=1有红点
       userMenu: [],  // 菜单
       activeMenu: location.hash.slice(1)
     }
   },
   computed: {
     noticeCount() {
-      return this.$store.state.noticeCount;
+      return this.$store.state.noticeCount
     },
   },
   mounted() {
@@ -101,7 +101,7 @@ export default {
     async getNoticeCount() {
       try {
         const count = await this.$api.noticeCount()
-        this.getNoticeCount = count
+        this.$store.commit("saveNoticeCount", count)
       } catch (error) {
         console.error(error)
       }

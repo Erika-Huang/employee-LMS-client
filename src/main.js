@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-import 'element-plus/dist/index.css'
 import request from './utils/request'
 import storage from './utils/storage'
 import api from './api'
@@ -18,12 +17,12 @@ const app = createApp(App)
 
 // 定义全局指令
 app.directive('has', {
-  beforeMount: (el, binding) => {
+  beforeMount: function (el, binding) {
     // 获取按钮权限
     let actionList = storage.getItem('actionList')
-    let values = binding.value
+    let value = binding.value
     // 盘点列表中是否有对应按钮权限标识
-    let hasPermission = actionList.includes(values)
+    let hasPermission = actionList.includes(value)
     if (!hasPermission) {
       el.style = "display:none"
       setTimeout(() => {
