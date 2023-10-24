@@ -4,7 +4,7 @@
 
 ## 功能模块图
 
-![image](https://github.com/Erika-Huang/employee-LMS-client/assets/87916335/01471ad7-dc39-47d9-bc1f-c315343a6285)
+![image](https://github.com/Erika-Huang/employee-LMS-client/assets/87916335/488580a5-acb6-4bdd-b152-8d739c20be70)
 
 ## 页面展示
 ### 登录界面——为了方便用户操作，登录界面设置非常简单
